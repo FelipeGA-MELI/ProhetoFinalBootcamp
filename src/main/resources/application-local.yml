@@ -4,7 +4,7 @@
 
 spring:
   datasource:
-    host: localhost:3306
+    host: localhost:3307
     db: dambetandb
     username: ${LOCAL_DB_USER:root}
     password: ${LOCAL_DB_PASS:root}

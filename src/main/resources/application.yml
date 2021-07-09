@@ -7,6 +7,18 @@ spring:
     add-mappings: false # Whether to enable default resource handling.
   mvc:
     throw-exception-if-no-handler-found: true # Whether a "NoHandlerFoundException" should be thrown if no Handler was found to process a request.
+  datasource:
+    host: DB_MYSQL_DESAENV04_FELIPEDB_FELIPEDB_ENDPOINT
+    db: felipedb
+    username: felipedb_WPROD
+    password: DB_MYSQL_DESAENV04_FELIPEDB_FELIPEDB_WPROD
+    initialization-mode: always
+
+  jpa:
+    show-sql: true
+    ibernate:
+      sql: debug
+    database-platform: org.hibernate.dialect.MySQL8Dialect
 
 server:
   compression:
