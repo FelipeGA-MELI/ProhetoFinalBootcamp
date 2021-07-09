@@ -39,6 +39,6 @@ springdoc:
     path: /swagger-ui.html
 
 app:
-  title: dambetan01
+  title: projetofinal
   description: @project.description@
   version: @project.version@
