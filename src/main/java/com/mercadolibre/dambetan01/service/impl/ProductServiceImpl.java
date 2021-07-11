@@ -2,27 +2,42 @@ package com.mercadolibre.dambetan01.service.impl;
 
 import com.mercadolibre.dambetan01.dtos.ProductListDTO;
 import com.mercadolibre.dambetan01.dtos.response.BatchStockDTO;
+import com.mercadolibre.dambetan01.dtos.ProductDTO;
 import com.mercadolibre.dambetan01.dtos.response.ProductStockSearchDTO;
 import com.mercadolibre.dambetan01.exceptions.NotFoundException;
+import com.mercadolibre.dambetan01.exceptions.ProductAlreadyRegistered;
+import com.mercadolibre.dambetan01.model.Category;
 import com.mercadolibre.dambetan01.model.Product;
+import com.mercadolibre.dambetan01.model.user.Seller;
+import com.mercadolibre.dambetan01.repository.CategoryRepository;
 import com.mercadolibre.dambetan01.repository.ProductRepository;
 import com.mercadolibre.dambetan01.repository.ProductStockRepository;
+import com.mercadolibre.dambetan01.repository.SellerRepository;
 import com.mercadolibre.dambetan01.service.ProductService;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
 public class ProductServiceImpl implements ProductService {
     final private ProductRepository repository;
     final private ProductStockRepository productStockRepository;
+    final private SellerRepository sellerRepository;
+    final private CategoryRepository categoryRepository;
+    final private ProductRepository productRepository;
 
-    public ProductServiceImpl(ProductRepository repository, ProductStockRepository productStockRepository) {
+    public ProductServiceImpl(ProductRepository repository, ProductStockRepository productStockRepository,
+                              SellerRepository sellerRepository, CategoryRepository categoryRepository,
+                              ProductRepository productRepository) {
         this.repository = repository;
         this.productStockRepository = productStockRepository;
+        this.sellerRepository = sellerRepository;
+        this.categoryRepository = categoryRepository;
+        this.productRepository = productRepository;
     }
 
     @Override
@@ -77,6 +92,31 @@ public class ProductServiceImpl implements ProductService {
         productStockSearchDTO.setSector(productStockRepository.findByProductBySector(idProduct));
         productStockSearchDTO.setBatchStock(byProductId);
         return productStockSearchDTO;
+    }
+
+    @Override
+    public ProductDTO resgisterProduct(ProductDTO productDTO) {
+        Optional<Seller> seller = sellerRepository.findById(productDTO.getSellerId());
+        Optional<Category> category = categoryRepository.findById(productDTO.getCategoryId());
+        Optional<Product> product = productRepository.findById(productDTO.getId());
+
+        if(seller.isEmpty())
+            throw new NotFoundException("Seller not found.");
+        if(category.isEmpty())
+            throw new NotFoundException("Category not found.");
+        if(product.isPresent())
+            throw new ProductAlreadyRegistered("Product has been already created");
+
+        Product productModel = new Product();
+        productModel.setId(productDTO.getId());
+        productModel.setName(productDTO.getName());
+        productModel.setSeller(seller.get());
+        productModel.setCategory(category.get());
+        productModel.setPrice(productDTO.getPrice());
+
+        productRepository.save(productModel);
+
+        return productDTO;
     }
 
     private Sort getProductStockSortByOrder(String order) {

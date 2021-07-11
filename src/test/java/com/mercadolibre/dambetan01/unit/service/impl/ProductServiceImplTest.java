@@ -5,8 +5,10 @@ import com.mercadolibre.dambetan01.exceptions.NotFoundException;
 import com.mercadolibre.dambetan01.model.Order;
 import com.mercadolibre.dambetan01.model.Product;
 import com.mercadolibre.dambetan01.model.ProductStock;
+import com.mercadolibre.dambetan01.repository.CategoryRepository;
 import com.mercadolibre.dambetan01.repository.ProductRepository;
 import com.mercadolibre.dambetan01.repository.ProductStockRepository;
+import com.mercadolibre.dambetan01.repository.SellerRepository;
 import com.mercadolibre.dambetan01.service.impl.ProductServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -21,6 +23,9 @@ import static org.mockito.Mockito.*;
 
 public class ProductServiceImplTest {
     private ProductRepository repository;
+    private SellerRepository sellerRepository;
+    private CategoryRepository categoryRepository;
+    private ProductRepository productRepository;
     private ProductServiceImpl service;
     private static List<ProductListDTO> productListDTO;
 
@@ -28,8 +33,12 @@ public class ProductServiceImplTest {
     @BeforeEach
     public void setUp(){
         repository = mock(ProductRepository.class);
+        sellerRepository = mock(SellerRepository.class);
+        categoryRepository = mock(CategoryRepository.class);
+        productRepository = mock(ProductRepository.class);
         final ProductStockRepository productStockRepository = mock(ProductStockRepository.class);
-        service = new ProductServiceImpl(repository, productStockRepository);
+        service = new ProductServiceImpl(repository, productStockRepository, sellerRepository, categoryRepository,
+                productRepository);
         productListDTO = List
                 .of(new ProductListDTO(1L,"Uva", "fresco", LocalDate.of(2021,12,1)));
     }

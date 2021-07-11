@@ -118,4 +118,16 @@ public class ApiExceptionControllerAdvice {
         );
 
     }
+
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler({ ProductAlreadyRegistered.class })
+    @ResponseBody
+    public ApiError ProductAlreadyCreated(RuntimeException ex) {
+        return new ApiError(
+                ex.getClass().getName(),
+                ex.getMessage(),
+                HttpStatus.BAD_REQUEST.value()
+        );
+
+    }
 }
