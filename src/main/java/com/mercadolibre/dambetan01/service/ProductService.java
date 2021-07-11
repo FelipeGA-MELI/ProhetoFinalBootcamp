@@ -3,6 +3,7 @@ package com.mercadolibre.dambetan01.service;
 import com.mercadolibre.dambetan01.dtos.ProductListDTO;
 import com.mercadolibre.dambetan01.dtos.ProductDTO;
 import com.mercadolibre.dambetan01.dtos.response.ProductStockSearchDTO;
+import com.mercadolibre.dambetan01.dtos.response.ProductWithIdResponse;
 import com.mercadolibre.dambetan01.model.Product;
 
 import java.util.List;
@@ -16,5 +17,7 @@ public interface ProductService {
 
     ProductStockSearchDTO findAllProductsByIdAndSort(Long idProduct, String order);
 
-    ProductDTO resgisterProduct(ProductDTO productDTO);
+    ProductWithIdResponse resgisterProduct(ProductDTO productDTO);
+
+    ProductWithIdResponse updateProduct(ProductDTO productDTO, Long productId);
 }

@@ -1,18 +1,23 @@
 package com.mercadolibre.dambetan01.unit.service.impl;
 
+import com.mercadolibre.dambetan01.dtos.ProductDTO;
 import com.mercadolibre.dambetan01.dtos.ProductListDTO;
 import com.mercadolibre.dambetan01.exceptions.NotFoundException;
+import com.mercadolibre.dambetan01.model.Category;
 import com.mercadolibre.dambetan01.model.Order;
 import com.mercadolibre.dambetan01.model.Product;
 import com.mercadolibre.dambetan01.model.ProductStock;
+import com.mercadolibre.dambetan01.model.user.Seller;
 import com.mercadolibre.dambetan01.repository.CategoryRepository;
 import com.mercadolibre.dambetan01.repository.ProductRepository;
 import com.mercadolibre.dambetan01.repository.ProductStockRepository;
 import com.mercadolibre.dambetan01.repository.SellerRepository;
 import com.mercadolibre.dambetan01.service.impl.ProductServiceImpl;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
@@ -128,5 +133,21 @@ public class ProductServiceImplTest {
 
         assertEquals(expectedMessage, actualMessage);
         verify(repository, times(1)).findAllProductsList(threeWeeksAgo);
+    }
+
+    @Test
+    public void shouldReturnProduct() {
+        ProductDTO productDTO = new ProductDTO("Presunto",1L,3L,new BigDecimal("300.00"));
+        Seller seller = mock(Seller.class);
+        Category category = mock(Category.class);
+        Product mockProduct = mock(Product.class);
+        Product product = new Product(1L,"Presunto",seller,category,new BigDecimal("300.00"));
+
+        when(productRepository.findByName(productDTO.getName())).thenReturn(Optional.of(mockProduct));
+        when(sellerRepository.findById(productDTO.getSellerId())).thenReturn(Optional.of(seller));
+        when(categoryRepository.findById(productDTO.getCategoryId())).thenReturn(Optional.of(category));
+        when(productRepository.save(product)).thenReturn(product);
+
+       //Assertions.assertEquals(productDTO,service.resgisterProduct(productDTO));
     }
 }

@@ -4,6 +4,7 @@ import com.mercadolibre.dambetan01.dtos.ProductListDTO;
 import com.mercadolibre.dambetan01.dtos.response.BatchStockDTO;
 import com.mercadolibre.dambetan01.dtos.ProductDTO;
 import com.mercadolibre.dambetan01.dtos.response.ProductStockSearchDTO;
+import com.mercadolibre.dambetan01.dtos.response.ProductWithIdResponse;
 import com.mercadolibre.dambetan01.exceptions.NotFoundException;
 import com.mercadolibre.dambetan01.exceptions.ProductAlreadyRegistered;
 import com.mercadolibre.dambetan01.model.Category;
@@ -95,10 +96,10 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public ProductDTO resgisterProduct(ProductDTO productDTO) {
+    public ProductWithIdResponse resgisterProduct(ProductDTO productDTO) {
         Optional<Seller> seller = sellerRepository.findById(productDTO.getSellerId());
         Optional<Category> category = categoryRepository.findById(productDTO.getCategoryId());
-        Optional<Product> product = productRepository.findById(productDTO.getId());
+        Optional<Product> product = productRepository.findByName(productDTO.getName());
 
         if(seller.isEmpty())
             throw new NotFoundException("Seller not found.");
@@ -108,15 +109,51 @@ public class ProductServiceImpl implements ProductService {
             throw new ProductAlreadyRegistered("Product has been already created");
 
         Product productModel = new Product();
-        productModel.setId(productDTO.getId());
         productModel.setName(productDTO.getName());
         productModel.setSeller(seller.get());
         productModel.setCategory(category.get());
         productModel.setPrice(productDTO.getPrice());
 
-        productRepository.save(productModel);
+        Product savedProduct = productRepository.save(productModel);
+        ProductWithIdResponse finalProduct = new ProductWithIdResponse();
+        finalProduct.setId(savedProduct.getId());
+        finalProduct.setName(savedProduct.getName());
+        finalProduct.setSellerId(savedProduct.getSeller().getId());
+        finalProduct.setCategoryId(savedProduct.getCategory().getId());
+        finalProduct.setPrice(savedProduct.getPrice());
 
-        return productDTO;
+        return finalProduct;
+    }
+
+    @Override
+    public ProductWithIdResponse updateProduct(ProductDTO productDTO, Long productId) {
+        Optional<Product> product = productRepository.findById(productId);
+        Optional<Seller> seller = sellerRepository.findById(productDTO.getSellerId());
+        Optional<Category> category = categoryRepository.findById(productDTO.getCategoryId());
+
+        if(product.isEmpty())
+            throw new NotFoundException("Product does not exist");
+        if(seller.isEmpty())
+            throw new NotFoundException("Seller not found.");
+        if(category.isEmpty())
+            throw new NotFoundException("Category not found.");
+
+        Product productModel = new Product();
+        productModel.setId(productId);
+        productModel.setName(productDTO.getName());
+        productModel.setSeller(seller.get());
+        productModel.setCategory(category.get());
+        productModel.setPrice(productDTO.getPrice());
+
+        Product savedProduct = productRepository.save(productModel);
+        ProductWithIdResponse finalProduct = new ProductWithIdResponse();
+        finalProduct.setId(savedProduct.getId());
+        finalProduct.setName(savedProduct.getName());
+        finalProduct.setSellerId(savedProduct.getSeller().getId());
+        finalProduct.setCategoryId(savedProduct.getCategory().getId());
+        finalProduct.setPrice(savedProduct.getPrice());
+
+        return finalProduct;
     }
 
     private Sort getProductStockSortByOrder(String order) {

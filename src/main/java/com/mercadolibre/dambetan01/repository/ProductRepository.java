@@ -6,8 +6,10 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import javax.swing.text.html.Option;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 public interface ProductRepository extends JpaRepository<Product, Long> {
     @Query(value = "SELECT new com.mercadolibre.dambetan01.dtos.ProductListDTO(p.id, p.name, p.category.name," +
@@ -16,4 +18,6 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
             "WHERE ps.dueDate >= :dateValid " +
             "GROUP BY p.id, p.name, p.category.name, ps.dueDate HAVING SUM(ps.currentQuantity) > 0")
     List<ProductListDTO> findAllProductsList(@Param("dateValid") LocalDate dateValid);
+
+    Optional<Product> findByName(String name);
 }
