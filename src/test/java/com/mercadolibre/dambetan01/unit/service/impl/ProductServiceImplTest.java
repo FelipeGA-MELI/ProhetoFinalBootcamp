@@ -13,7 +13,6 @@ import com.mercadolibre.dambetan01.repository.ProductRepository;
 import com.mercadolibre.dambetan01.repository.ProductStockRepository;
 import com.mercadolibre.dambetan01.repository.SellerRepository;
 import com.mercadolibre.dambetan01.service.impl.ProductServiceImpl;
-import org.aspectj.weaver.ast.Not;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import java.math.BigDecimal;

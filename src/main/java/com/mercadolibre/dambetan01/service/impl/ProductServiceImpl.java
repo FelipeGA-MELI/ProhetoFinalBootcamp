@@ -97,14 +97,10 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public ProductWithIdResponse resgisterProduct(ProductDTO productDTO) {
-        Optional<Seller> seller = sellerRepository.findById(productDTO.getSellerId());
-        Optional<Category> category = categoryRepository.findById(productDTO.getCategoryId());
+        Optional<Seller> seller = checkIfSellerExists(productDTO.getSellerId());
+        Optional<Category> category = checkIfCategoryExists(productDTO.getCategoryId());
         Optional<Product> product = productRepository.findByName(productDTO.getName());
 
-        if(seller.isEmpty())
-            throw new NotFoundException("Seller not found.");
-        if(category.isEmpty())
-            throw new NotFoundException("Category not found.");
         if(product.isPresent())
             throw new ProductAlreadyRegistered("Product has been already created");
 
@@ -128,15 +124,11 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public ProductWithIdResponse updateProduct(ProductDTO productDTO, Long productId) {
         Optional<Product> product = productRepository.findById(productId);
-        Optional<Seller> seller = sellerRepository.findById(productDTO.getSellerId());
-        Optional<Category> category = categoryRepository.findById(productDTO.getCategoryId());
+        Optional<Seller> seller = checkIfSellerExists(productDTO.getSellerId());
+        Optional<Category> category = checkIfCategoryExists(productDTO.getCategoryId());
 
         if(product.isEmpty())
             throw new NotFoundException("Product does not exist");
-        if(seller.isEmpty())
-            throw new NotFoundException("Seller not found.");
-        if(category.isEmpty())
-            throw new NotFoundException("Category not found.");
 
         Product productModel = new Product();
         productModel.setId(productId);
@@ -171,5 +163,21 @@ public class ProductServiceImpl implements ProductService {
         }
     }
 
+    private Optional<Seller> checkIfSellerExists(Long sellerId) {
+        Optional<Seller> seller = sellerRepository.findById(sellerId);
 
+        if(seller.isEmpty())
+            throw new NotFoundException("Seller not found.");
+
+        return seller;
+    }
+
+    private Optional<Category> checkIfCategoryExists(Long categoryId) {
+        Optional<Category> category = categoryRepository.findById(categoryId);
+
+        if(category.isEmpty())
+            throw new NotFoundException("Category not found.");
+
+        return category;
+    }
 }
