@@ -3,6 +3,7 @@ package com.mercadolibre.dambetan01.dtos;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import org.springframework.validation.annotation.Validated;
 import javax.validation.constraints.NotNull;
@@ -13,6 +14,7 @@ import java.math.BigDecimal;
 @Validated
 @AllArgsConstructor
 @NoArgsConstructor
+@EqualsAndHashCode
 public class ProductDTO {
     @JsonProperty(value = "name")
     @Size(min = 3, max = 20, message = "O nome do produto deve ter entre 3 e 20 caracteres.")
