@@ -4,6 +4,7 @@ import com.mercadolibre.dambetan01.dtos.ProductDTO;
 import com.mercadolibre.dambetan01.dtos.ProductListDTO;
 import com.mercadolibre.dambetan01.dtos.response.ProductWithIdResponse;
 import com.mercadolibre.dambetan01.exceptions.NotFoundException;
+import com.mercadolibre.dambetan01.exceptions.ProductAlreadyRegistered;
 import com.mercadolibre.dambetan01.model.Category;
 import com.mercadolibre.dambetan01.model.Product;
 import com.mercadolibre.dambetan01.model.user.Seller;
@@ -12,6 +13,7 @@ import com.mercadolibre.dambetan01.repository.ProductRepository;
 import com.mercadolibre.dambetan01.repository.ProductStockRepository;
 import com.mercadolibre.dambetan01.repository.SellerRepository;
 import com.mercadolibre.dambetan01.service.impl.ProductServiceImpl;
+import org.aspectj.weaver.ast.Not;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import java.math.BigDecimal;
@@ -28,6 +30,7 @@ public class ProductServiceImplTest {
     private CategoryRepository categoryRepository;
     private ProductRepository productRepository;
     private ProductServiceImpl service;
+    private Product product;
     private Seller seller;
     private Category category;
     private static List<ProductListDTO> productListDTO;
@@ -41,6 +44,7 @@ public class ProductServiceImplTest {
         sellerRepository = mock(SellerRepository.class);
         categoryRepository = mock(CategoryRepository.class);
         productRepository = mock(ProductRepository.class);
+        product = mock(Product.class);
         final ProductStockRepository productStockRepository = mock(ProductStockRepository.class);
         service = new ProductServiceImpl(repository, productStockRepository, sellerRepository, categoryRepository,
                productRepository);
@@ -182,12 +186,35 @@ public class ProductServiceImplTest {
     }
 
     @Test
-    public void shouldReturnExceptionOnCreatingProducts() {
+    public void shouldReturnProductAlreadyCreatedExceptionOnCreatingProducts() {
+        ProductDTO productDTO = new ProductDTO("Presunto",1L,3L,new BigDecimal("300.00"));
 
+        when(productRepository.findByName("Presunto")).thenReturn(Optional.of(product));
+        when(sellerRepository.findById(productDTO.getSellerId())).thenReturn(Optional.of(seller));
+        when(categoryRepository.findById(productDTO.getCategoryId())).thenReturn(Optional.of(category));
+
+        assertThrows(ProductAlreadyRegistered.class, () -> service.resgisterProduct(productDTO));
     }
 
     @Test
-    public void shouldReturnExceptionOnUpdatingProducts() {
+    public void shouldReturnNotFoundExceptionOnCreatingProduct() {
+        ProductDTO productDTO = new ProductDTO("Presunto",1L,3L,new BigDecimal("300.00"));
 
+        when(productRepository.findByName("Presunto")).thenReturn(Optional.empty());
+        when(sellerRepository.findById(productDTO.getSellerId())).thenReturn(Optional.empty());
+        when(categoryRepository.findById(productDTO.getCategoryId())).thenReturn(Optional.empty());
+
+        assertThrows(NotFoundException.class, () -> service.resgisterProduct(productDTO));
+    }
+
+    @Test
+    public void shouldReturnNotFoundExceptionOnUpdatingProducts() {
+        ProductDTO productDTO = new ProductDTO("Presunto",1L,3L,new BigDecimal("300.00"));
+
+        when(productRepository.findById(1L)).thenReturn(Optional.empty());
+        when(sellerRepository.findById(productDTO.getSellerId())).thenReturn(Optional.empty());
+        when(categoryRepository.findById(productDTO.getCategoryId())).thenReturn(Optional.empty());
+
+        assertThrows(NotFoundException.class, () -> service.updateProduct(productDTO,1L));
     }
 }
