@@ -180,4 +180,14 @@ public class ProductServiceImplTest {
         assertEquals(finalProductExpected.getName(),finalProductReceived.getName());
         assertEquals(finalProductExpected.getPrice(),finalProductReceived.getPrice());
     }
+
+    @Test
+    public void shouldReturnExceptionOnCreatingProducts() {
+
+    }
+
+    @Test
+    public void shouldReturnExceptionOnUpdatingProducts() {
+
+    }
 }
