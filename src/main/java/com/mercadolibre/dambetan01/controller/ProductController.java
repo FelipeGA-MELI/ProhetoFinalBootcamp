@@ -2,7 +2,6 @@ package com.mercadolibre.dambetan01.controller;
 
 import com.mercadolibre.dambetan01.dtos.ProductListDTO;
 import com.mercadolibre.dambetan01.dtos.ProductDTO;
-import com.mercadolibre.dambetan01.model.Product;
 import com.mercadolibre.dambetan01.model.user.EPermission;
 import com.mercadolibre.dambetan01.service.ProductService;
 import org.springframework.http.HttpStatus;
@@ -35,14 +34,14 @@ public class ProductController {
     }
 
     @PostMapping("/register")
-    @PreAuthorize("permitAll()")
+    @PreAuthorize("hasAuthority('" + EPermission.Constants.GET_PRODUCT_BY_WAREHOUSE_PERMISSION  + "')")
     public ResponseEntity registerProduct(@RequestBody @Valid ProductDTO productDTO) {
         ProductDTO product = productService.resgisterProduct(productDTO);
         return ResponseEntity.status(HttpStatus.CREATED).body(product);
     }
 
     @PutMapping("/update/{productId}")
-    @PreAuthorize("permitAll()")
+    @PreAuthorize("hasAuthority('" + EPermission.Constants.GET_PRODUCT_BY_WAREHOUSE_PERMISSION  + "')")
     public ResponseEntity updateProduct(@RequestBody @Valid ProductDTO productDTO,@PathVariable Long productId) {
         ProductDTO product = productService.updateProduct(productDTO, productId);
         return ResponseEntity.status(HttpStatus.ACCEPTED).body(product);
